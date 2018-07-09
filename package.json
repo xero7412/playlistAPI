@@ -1,0 +1,17 @@
+{
+  "name": "playlist",
+  "version": "0.0.0",
+  "description": "REST api for plylist",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "body-parser": "^1.15.2"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": {
+    "name": "Toshi sharma",
+    "email": "toshosharma1208@gmail.com"
+  }
+}

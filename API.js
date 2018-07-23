@@ -1,19 +1,16 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var fs = require("fs");
 
 const PORT = process.env.PORT || 4001;
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
-const { getId, addSong } = require('./APIfunc');
+const { getId, addSong, finished } = require('./APIfunc');
 
 //stored songs
-let songs = {
-    1 : {"song" : "in the end"},
-    2 : {"song" : "numb"},
-    3 : {"song" : "papercut"}
-};
+let songs = require('./songs.json');
 
 //get all songs
 app.get('/songs', (req, res) => {
@@ -24,7 +21,7 @@ app.get('/songs', (req, res) => {
 app.get('/songs/:id', (req, res) => {
     const foundSong = getId(req.params.id, songs);
     if (foundSong) {
-        res.send(songs[req.params.id]);
+        res.send(songs[req.params.id]);  
     } else {
         res.status(404).send('song does not exist');
     }
@@ -33,8 +30,10 @@ app.get('/songs/:id', (req, res) => {
 //add song to the list 
 app.post('/songs/:song', (req, res) => {
     const newSong = addSong(req.params.song, songs);
-    if (newSong) {
+    if (newSong) { 
         res.status(201).send(newSong);
+        var data = JSON.stringify(songs, null, 2);
+        fs.writeFile('songs.json',data,finished);
     } else {
         res.status(400).send('cannot create');
     }
@@ -46,6 +45,8 @@ app.put('/songs/:id/:song', (req, res) => {
     if (getIndex) {
         songs[req.params.id] = {"song" : req.params.song};
         res.send(songs);
+        var data = JSON.stringify(songs, null, 2);
+        fs.writeFile('songs.json',data,finished);
     }
     else {
         res.status(404).send('song does not exist');
@@ -58,6 +59,8 @@ app.delete('/songs/:id', (req, res) => {
     if (newidx) {
         delete(songs[req.params.id]);
         res.status(204).send('deleted');
+        var data = JSON.stringify(songs, null, 2);
+        fs.writeFile('songs.json',data,finished);
     } else {
         res.status(404).send('song does not exist');
     }
